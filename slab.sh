@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-OP_TEAM='team_cues'
+OP_SESSION_NAME="OP_SESSION_my_team"
 
 
 check_os () {
@@ -61,8 +61,7 @@ op_get_items () {
 			exit
 		fi
 	else
-		VAR="OP_SESSION_$OP_TEAM"
-		eval "$VAR"="$(cat ~/.op_session)"
+		eval "$OP_SESSION_NAME"="$(cat ~/.op_session)"
 	fi
 
 	if [[ "$OS" == 'Linux' ]]
