@@ -37,11 +37,13 @@ Download op-scripts:
 
 ### Usage:
 
+Initial login:
 
-`slab.sh` reads `~/.op_session` for it's session ID. Therefore, login this way:
+`op signin <subdomain> <email> <secret key>`
 
-`op signin <subdomain> <email> <secret key> --output=raw > ~/.op_session`
+`slab.sh` reads `~/.op_session` for it's session ID. Therefore, login this way in the future:
 
+`op signin --output=raw > ~/.op_session`
 
 Edit the 'OP_SESSION_NAME' variable at the top of `/opt/op-scripts/slab.sh` to reflect the variable that `op` recommends you export when you login.
 
