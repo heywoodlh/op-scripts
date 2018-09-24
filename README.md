@@ -37,13 +37,28 @@ Download op-scripts:
 
 ### Usage:
 
-`slab.sh` will only return login items in the vault with a corresponding URI of `sudolikeaboss://`. So any entry you'd like to have returned by `slab` will need to have that URI. 
 
-Also, `slab.sh` doesn't intelligently work with names so if an entry returns multiple values it will not work. I recommend naming each item in your vault that you'd like to have returned by `slab.sh` a really unique name (I.E. `Google Personal Account -- SLAB`) so that `slab.sh` doesn't return multiple values.
-
-All of these scripts read `~/.op_session` for it's session ID. Therefore, login this way:
+`slab.sh` reads `~/.op_session` for it's session ID. Therefore, login this way:
 
 `op signin <subdomain> <email> <secret key> --output=raw > ~/.op_session`
 
 
+Edit the 'OP_SESSION_NAME' variable at the top of `/opt/op-scripts/slab.sh` to reflect the variable that `op` recommends you export when you login.
+
+I.E. OP_SESSION_NAME would be 'OP_SESSION_my_team' if I have this output after I sign in:
+
+```
+export *OP_SESSION_my_team*="<session>"
+# This command is meant to be used with your shell's eval function.
+# Run 'eval $(op signin my_team)' to sign into your 1Password account.
+# If you wish to use the session token itself, pass the --output=raw flag value. 
+```
+
+
+
 Once logged in, `slab.sh` should be suitable for use. Either create a keyboard shortcut the scripts in `/opt/op-scripts` or invoke the scripts from the CLI.
+
+`slab.sh` will only return login items in the vault with a corresponding URI of `sudolikeaboss://`. So any entry you'd like to have returned by `slab` will need to have that URI. 
+
+Also, `slab.sh` doesn't intelligently work with names so if an entry returns multiple values it will not work. I recommend naming each item in your vault that you'd like to have returned by `slab.sh` a really unique name (I.E. `Google Personal Account -- SLAB`) so that `slab.sh` doesn't return multiple values.
+
