@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+OP_TEAM='team_cues'
+
+
 check_os () {
 	if uname -a | grep -iq 'linux'
 	then
@@ -24,10 +27,10 @@ check_deps () {
 	OS="$1"
 	if [[ "$OS" == 'Linux' ]]
 	then
-		PACKAGES=(bw xclip rofi jq zenity)
+		PACKAGES=(op xclip rofi jq zenity)
 	elif [[ "$OS" == 'Mac' ]]
 	then
-		PACKAGES=(bw choose jq)
+		PACKAGES=(op choose jq)
 	fi
 	FAILED_PACKAGES=()
 	FAILURE='FALSE'
@@ -44,31 +47,32 @@ check_deps () {
 }
 
 
-bw_get_items () {
+op_get_items () {
 	OS="$1"
-	if [ ! -f ~/.bw_session ]
+	if [ ! -f ~/.op_session ]
 	then
 		if [[ "$OS" == 'Mac' ]]
 		then
-			VAULT_PW="$(osascript -e 'Tell application "System Events" to display dialog "Enter Bitwarden Vault Password:" with hidden answer default answer ""' -e 'text returned of result' 2>/dev/null)"
+			VAULT_PW="$(osascript -e "display notification \"Please sign into OP\"")"
+			exit
 		elif [[ "$OS" == 'Linux' ]]
 		then
-			VAULT_PW="$(zenity --password)"
+			#VAULT_PW="$(zenity --password)"
+			exit
 		fi
-		BW_SESSION="$(bw unlock "$VAULT_PW" --raw)"
-		echo "$BW_SESSION" > ~/.bw_session
 	else
-		BW_SESSION="$(cat ~/.bw_session)"
+		VAR="OP_SESSION_$OP_TEAM"
+		eval "$VAR"="$(cat ~/.op_session)"
 	fi
 
 	if [[ "$OS" == 'Linux' ]]
 	then
-		SELECTION="$(bw list items --search 'sudolikeaboss://' --session "$BW_SESSION" | jq -r '.[].name' | rofi -dmenu -p 'slab: ')"
-		bw get password "$SELECTION" --session "$BW_SESSION" | xclip -selection clipboard
+		SELECTION="$(op list items --search 'sudolikeaboss://' --session "$OP_SESSION" | jq -r '.[].name' | rofi -dmenu -p 'slab: ')"
+		op get item "$SELECTION" | jq  -r '.details.fields[] | select(.designation == "password") | .value' | xclip -selection clipboard
 	elif [[ "$OS" == 'Mac' ]]
 	then
-		SELECTION="$(bw list items --search 'sudolikeaboss://' --session "$BW_SESSION" | jq -r '.[].name' | choose)"
-		bw get password "$SELECTION" --session "$BW_SESSION" | pbcopy
+		SELECTION="$(op list items | jq -r '.[] | select(.overview.url == "sudolikeaboss://") | .overview.title' | choose)"
+		op get item "$SELECTION" | jq  -r '.details.fields[] | select(.designation == "password") | .value' | pbcopy
 	fi
 	
 }	
@@ -85,7 +89,7 @@ main () {
 		OS='Mac'
 	fi
 	check_deps "$OS"
-	bw_get_items "$OS"
+	op_get_items "$OS"
 }
 
 main
